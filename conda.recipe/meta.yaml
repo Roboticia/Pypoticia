@@ -1,5 +1,5 @@
 package:
-  name: pypot
+  name: pypoticia
   # version automatically set in the build.sh and blt.bat
 
 source:

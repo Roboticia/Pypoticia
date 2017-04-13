@@ -22,8 +22,7 @@ install_requires = ['numpy',
                     'scipy',
                     'ikpy',
                     'bottle',
-                    'poppy-creature>=2'  # Kept to avoid breaking old imports
-                    ]
+                   ]
 
 if sys.version_info < (2, 7):
     print("python version < 2.7 is not supported")
@@ -33,7 +32,7 @@ if sys.version_info < (3, 4):
     install_requires.append('enum34')
 
 
-setup(name='pypot',
+setup(name='pypoticia',
       version=version(),
       packages=find_packages(),
 
