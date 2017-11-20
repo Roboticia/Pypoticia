@@ -211,22 +211,18 @@ def check_motor_eprom_configuration(config, dxl_io, motor_names):
         Check if the return delay time is set to 0.
     """
     changed_angle_limits = {}
-    changed_return_delay_time = {}
-
+    
     for name in motor_names:
         m = config['motors'][name]
         id = m['id']
 
         try:
             old_limits = dxl_io.get_angle_limit((id, ))[0]
-            old_return_delay_time = dxl_io.get_return_delay_time((id, ))[0]
+            
         except IndexError:  # probably a broken motor so we just skip
             continue
 
-        if old_return_delay_time != 0:
-            logger.warning("Return delay time of %s changed from %s to 0",
-                           name, old_return_delay_time)
-            changed_return_delay_time[id] = 0
+        
 
         new_limits = m['angle_limit']
         if 'wheel_mode' in m and m['wheel_mode']:
@@ -246,9 +242,7 @@ def check_motor_eprom_configuration(config, dxl_io, motor_names):
         dxl_io.set_angle_limit(changed_angle_limits)
         time.sleep(0.5)
 
-    if changed_return_delay_time:
-        dxl_io.set_return_delay_time(changed_return_delay_time)
-        time.sleep(0.5)
+    
 
 
 def instatiate_motors(config):
