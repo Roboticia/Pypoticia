@@ -165,6 +165,18 @@ class SnapRobotServer(AbstractServer):
 
         set_snap_server_variables(find_local_ip(), port, path=get_snap_user_projects_directory())
 
+        @self.app.get('/sensors')
+        def get_sensors():
+            return '/'.join(rr.get_sensors_list())
+        
+        @self.app.get('/sensor/<sensor>')
+        def get_sensor_registers_list(sensor):
+            return '/'.join(rr.get_sensors_registers_list(sensor))
+        
+        @self.app.get('/sensor/<sensor>/get/<register>')
+        def get_sensor_register_value(sensor, register):
+            return str(rr.get_sensor_register_value(sensor, register))
+              
         @self.app.get('/')
         def get_sitemap():
             return '</br>'.join([escape(r.rule.format()) for r in self.app.routes])
