@@ -188,15 +188,24 @@ dynamixelBaudrates = {
 }
 
 
+dynamixelBaudratesWithModel = { 'XL-320': {
+        0:9600.0, 
+        1:57600.0,
+        2:115200.0,
+        3:1000000.0
+    }
+}
+
+
 def dxl_to_baudrate(value, model):
-    return dynamixelBaudrates[value]
+    return dynamixelBaudratesWithModel.get(model, dynamixelBaudrates)[value]
 
 
 def baudrate_to_dxl(value, model):
-    for k, v in dynamixelBaudrates.iteritems():
+    for k, v in dynamixelBaudratesWithModel.get(model, dynamixelBaudrates).iteritems():
         if (abs(v - value) / float(value)) < 0.05:
             return k
-    raise ValueError('incorrect baudrate {} (possible values {})'.format(value, dynamixelBaudrates.values()))
+    raise ValueError('incorrect baudrate {} (possible values {})'.format(value, dynamixelBaudratesWithModel.get(model, dynamixelBaudrates).values()))
 
 # MARK: - Return Delay Time
 
@@ -268,21 +277,31 @@ dynamixelErrors = ['None Error',
                    'Angle Limit Error',
                    'Input Voltage Error']
 
+				   
+dynamixelErrorsWithModel = {'XL-320' : ['-',
+                   '-',
+                   '-',
+                   '-',
+                   '-',
+                   'Input Voltage Error',
+                   'Overheating Error',
+                   'Overload Error']}
 
 def dxl_to_alarm(value, model):
-    return decode_error(value)
+    return decode_error(value, model)
 
 
-def decode_error(error_code):
+def decode_error(error_code, model):
     bits = numpy.unpackbits(numpy.asarray(error_code, dtype=numpy.uint8))
-    return tuple(numpy.array(dynamixelErrors)[bits == 1])
+    return tuple(numpy.array(dynamixelErrorsWithModel.get(model,dynamixelErrors ))[bits == 1])
 
 
 def alarm_to_dxl(value, model):
-    if not set(value).issubset(dynamixelErrors):
-        raise ValueError('should only contains error among {}'.format(dynamixelErrors))
+    dynErr = dynamixelErrorsWithModel.get(model,dynamixelErrors )
+    if not set(value).issubset(dynErr):
+        raise ValueError('should only contains error among {}'.format(dynErr))
 
-    indices = [len(dynamixelErrors) - 1 - dynamixelErrors.index(e) for e in value]
+    indices = [len(dynErr) - 1 - dynErr.index(e) for e in value]
     return sum(2 ** i for i in indices)
 
 
